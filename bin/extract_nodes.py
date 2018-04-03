@@ -4,6 +4,7 @@ import sys, os
 import argparse
 import json
 from frozendict import frozendict
+import gzip
 
 parser = argparse.ArgumentParser(
   description='This is a script to extract an Ethereum node list from an Ethereum edge list.',
@@ -14,7 +15,13 @@ parser.add_argument('-n', '--nodes', help="Path to the output nodes file", requi
 args = parser.parse_args()
 
 # Load and parse the data
-f = open(args.edges)
+open_func = None
+if args.edges.endswith(".gz"):
+  open_func = gzip.open
+else:
+  open_func = open
+
+f = open_func(args.edges)
 records = []
 for line in f:
   record = frozendict(json.loads(line))
